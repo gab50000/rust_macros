@@ -20,20 +20,21 @@ macro_rules! mul {
 }
 
 macro_rules! make_struct {
-    ($id:ident) => {
+    ($id:ident, $type:ty) => {
         #[derive(Debug)]
-        struct $id(i32);
+        struct $id($type);
     };
 }
 
 trace_macros!(true);
-make_struct!(Blablub);
-make_struct!(Blablib);
+make_struct!(Blablub, i32);
+make_struct!(Blablib, u32);
 trace_macros!(false);
 
 fn main() {
     println!("{}", times_5!(123));
     println!("{}", mul![1, 2, 3, 4, 5]);
     println!("{}", mul![]);
+    println!("{:?}", Blablub(-123));
     println!("{:?}", Blablib(123));
 }
