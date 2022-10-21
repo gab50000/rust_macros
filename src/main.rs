@@ -2,8 +2,7 @@
 #![feature(log_syntax)]
 
 use nom::bytes::complete::tag;
-use nom::character::complete::char;
-use nom::character::complete::digit1;
+use nom::character::complete::{alpha1, char, digit1};
 use nom::combinator::map;
 use nom::combinator::map_res;
 use nom::sequence::preceded;
@@ -29,11 +28,17 @@ macro_rules! mul {
     };
 }
 
+trait Parse {
+    fn parse(input: &str) -> IResult<&str, Self>
+    where
+        Self: Sized;
+}
+
 macro_rules! make_struct {
     ($id:ident, $tag:literal) => {
         #[derive(Debug)]
         struct $id<T: FromStr>(T);
-        impl<T> $id<T>
+        impl<T> Parse for $id<T>
         where
             T: FromStr,
         {
@@ -45,6 +50,15 @@ macro_rules! make_struct {
                 p(input)
             }
         }
+
+        // impl Parse for $id<&str> {
+        //     fn parse(input: &str) -> IResult<&str, Self> {
+        //         let prefix = tuple((tag($tag), char(':')));
+        //         let parser = preceded(prefix, alpha1);
+        //         let mut p = map(parser, Self);
+        //         p(input)
+        //     }
+        // }
     };
 }
 
