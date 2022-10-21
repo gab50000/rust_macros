@@ -30,7 +30,7 @@ macro_rules! mul {
 }
 
 macro_rules! make_struct {
-    ($id:ident) => {
+    ($id:ident, $tag:literal) => {
         #[derive(Debug)]
         struct $id<T: FromStr>(T);
         impl<T> $id<T>
@@ -38,7 +38,7 @@ macro_rules! make_struct {
             T: FromStr,
         {
             fn parse(input: &str) -> IResult<&str, Self> {
-                let prefix = tuple((tag("byr"), char(':')));
+                let prefix = tuple((tag($tag), char(':')));
                 let parse_numbers = map_res(digit1, T::from_str);
                 let parser = preceded(prefix, parse_numbers);
                 let mut p = map(parser, Self);
@@ -49,15 +49,14 @@ macro_rules! make_struct {
 }
 
 trace_macros!(true);
-make_struct!(Blablub);
-make_struct!(Blablib);
-make_struct!(ABC);
+make_struct!(BirthYear, "byr");
+make_struct!(EyeColor, "ecl");
 trace_macros!(false);
 
 fn main() {
     println!("{}", times_5!(123));
     println!("{}", mul![1, 2, 3, 4, 5]);
     println!("{}", mul![]);
-    println!("{:?}", Blablub(-123));
-    println!("{:?}", Blablib::<i32>::parse("byr:499"));
+    println!("{:?}", BirthYear::<i32>::parse("byr:499"));
+    // println!("{:?}", EyeColor::<&str>::parse("byr:499"));
 }
